@@ -56,9 +56,9 @@ namespace VoxelDare
 
 		static Vector2[] CUBE_UV = new Vector2[] {
 			new Vector2( 0.0f,  0.0f),
-			new Vector2( 1.0f,  0.0f),
-			new Vector2( 1.0f,  1.0f),
 			new Vector2( 0.0f,  1.0f),
+			new Vector2( 1.0f,  1.0f),
+			new Vector2( 1.0f,  0.0f),
 		};
 
 		public static void AddFace(this MeshData md, Int3 posi, int a, Color color, Vector2 texCoord)
