@@ -2,6 +2,7 @@
 
 public class Player : MonoBehaviour
 {
+	public VoxelDare.VoxelRenderer voxelRenderer;
 
 	public bool flying = false;
 
@@ -29,11 +30,6 @@ public class Player : MonoBehaviour
 	
 	void Update()
 	{
-		// toogle fly
-		if(Input.GetKeyDown(KeyCode.F)) {
-			flying = !flying;
-		}
-
 		// look
 
 		rotationX += Input.GetAxis("Mouse X") * sensitivity;
@@ -58,8 +54,34 @@ public class Player : MonoBehaviour
 		else {
 			delta = Quaternion.AngleAxis(this.transform.rotation.eulerAngles.y, Vector3.up) * delta;
 		}
-		this.transform.position += delta;
+		Vector3 posnew = this.transform.position + delta;
+		bool hasTopVoxel = voxelRenderer.Voxels.HasTopVoxel(posnew);
+		if(flying) {
+			this.transform.position = posnew;
+		}
+		else {
+			// check if we can move there
+			if(hasTopVoxel) {
+				this.transform.position = posnew;
+				// move onto to voxel
+				Vector3 p = this.transform.position;
+				p.y = voxelRenderer.Voxels.GetTopVoxelHeight(p) + 1.0f;
+				this.transform.position = p;
+			}
+		}
 
+		// toogle fly
+		if(Input.GetKeyDown(KeyCode.F)) {
+			if(flying) {
+				// only toggle back to non-flying if we are on supported ground
+				if(hasTopVoxel)
+					flying = false;
+			}
+			else {
+				flying = true;
+			}
+		}
+		
 	}
 
 	public static float ClampAngle(float angle, float min, float max)
