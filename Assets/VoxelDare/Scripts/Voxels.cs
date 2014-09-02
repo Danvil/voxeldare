@@ -326,6 +326,12 @@ namespace VoxelDare
 			return TryGetTopVoxel(p, out top);
 		}
 
+		public bool HasTopVoxel(Vector3 p)
+		{
+			Int3 top;
+			return TryGetTopVoxel(p.ToInt3(), out top);
+		}
+		
 		public bool TryGetTopVoxel(Int3 p, out Int3 top)
 		{
 			return TryGetTopVoxel(p.xy, out top);
@@ -352,5 +358,13 @@ namespace VoxelDare
 			return top.z;
 		}
 
+		public int GetTopVoxelHeight(Vector3 p)
+		{
+			Int3 pi = p.ToInt3();
+			Int3 top;
+			TryGetTopVoxel(pi.xy, out top);
+			return top.z;
+		}
+		
 	}
 }
