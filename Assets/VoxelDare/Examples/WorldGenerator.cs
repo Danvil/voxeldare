@@ -94,7 +94,7 @@ public class WorldGenerator : MonoBehaviour
 			case WorldType.MINI_MINECRAFT: voxels = CreateMiniMinecraft(worldSize, worldHeight); break;
 			case WorldType.DISCWORLD: voxels = CreateDiscworld(worldSize/2, worldHeight); break;
 		};
-		GetComponent<VoxelDare.VoxelRenderer>().SetWorld(voxels);
+		GetComponent<VoxelDare.VoxelRenderer>().Voxels = voxels;
 	}
 
 	void Update()

@@ -11,15 +11,18 @@ namespace VoxelDare
 	{
 		public GameObject pfVoxelChunk;
 
-		VoxelDare.World world;
+		VoxelDare.World voxels;
+		public VoxelDare.World Voxels
+		{
+			get { return voxels; }
+			set
+			{
+				this.voxels = value;
+				Create();
+			}
+		}
 
 		Dictionary<Int3,GameObject> chunks = new Dictionary<VoxelDare.Int3,GameObject>();
-
-		public void SetWorld(VoxelDare.World world)
-		{
-			this.world = world;
-			Create();
-		}
 
 		void Create()
 		{
@@ -29,7 +32,7 @@ namespace VoxelDare
 			}
 			chunks.Clear();
 			// get all meshes
-			Dictionary<Int3,Mesh> meshes = world.CreateAll();
+			Dictionary<Int3,Mesh> meshes = voxels.CreateAll();
 			// create gameobjects
 			foreach(var p in meshes) {
 				GameObject go = (GameObject)Instantiate(pfVoxelChunk);
@@ -42,7 +45,7 @@ namespace VoxelDare
 
 		void Recreate()
 		{
-			foreach(var p in world.RecreateDirty()) {
+			foreach(var p in voxels.RecreateDirty()) {
 				chunks[p.Key].SetMesh(p.Value);
 			}
 		}
