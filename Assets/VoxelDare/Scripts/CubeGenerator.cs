@@ -54,21 +54,21 @@ namespace VoxelDare
 		    },
 		};
 
-		static Vector3[] CUBE_UV = new Vector3[] {
+		static Vector2[] CUBE_UV = new Vector2[] {
 			new Vector2( 0.0f,  0.0f),
 			new Vector2( 1.0f,  0.0f),
 			new Vector2( 1.0f,  1.0f),
 			new Vector2( 0.0f,  1.0f),
 		};
 
-		public static void AddFace(this MeshData md, Int3 posi, int a, Color color)
+		public static void AddFace(this MeshData md, Int3 posi, int a, Color color, Vector2 texCoord)
 		{
 			int n = md.vertices.Count;
 			var pos = posi.ToVector3();
 			for(int i=0; i<4; i++) {
 				md.vertices.Add(CUBE_VERTICES[a,i] + pos);
 				md.normals.Add(CUBE_NORMALS[a]);
-				md.uv.Add(CUBE_UV[i]);
+				md.uv.Add((CUBE_UV[i] + texCoord)/(float)Voxel.TEX_ATLAS_SIZE);
 				md.colors.Add(color);
 			}	
 			md.indices.Add(n  );
@@ -81,19 +81,19 @@ namespace VoxelDare
 
 		public static void AddFace(this MeshData md, Int3 posi, int a)
 		{
-			md.AddFace(posi, a, Color.white);
+			md.AddFace(posi, a, Color.white, Vector2.zero);
 		}
 
-		public static void AddCube(this MeshData md, Int3 posi, Color color)
+		public static void AddCube(this MeshData md, Int3 posi, Color color, Vector2 texCoord)
 		{
 			for(int a=0; a<6; a++) {
-				md.AddFace(posi, a, color);
+				md.AddFace(posi, a, color, texCoord);
 			}
 		}
 
 		public static void AddCube(this MeshData md, Int3 posi)
 		{
-			md.AddCube(posi, Color.white);
+			md.AddCube(posi, Color.white, Vector2.zero);
 		}
 	}
 }

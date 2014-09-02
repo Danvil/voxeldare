@@ -77,24 +77,27 @@ namespace VoxelDare
 					for(int x=0; x<S; x++,i++) {
 						Voxel b = voxels[i];
 						if(b.IsSolid) {
+							Color color = b.color;
+							int texId = b.texId;
+							Vector2 texCoord = new Vector2(texId%Voxel.TEX_ATLAS_SIZE, texId/Voxel.TEX_ATLAS_SIZE);
 							Int3 w = pos + new Int3(x,y,z);
 							if(!world.IsSolid(w + Int3.X)) {
-								md.AddFace(w, 0, b.color);
+								md.AddFace(w, 0, color, texCoord);
 							}
 							if(!world.IsSolid(w - Int3.X)) {
-								md.AddFace(w, 1, b.color);
+								md.AddFace(w, 1, color, texCoord);
 							}
 							if(!world.IsSolid(w + Int3.Y)) {
-								md.AddFace(w, 4, b.color);
+								md.AddFace(w, 4, color, texCoord);
 							}
 							if(!world.IsSolid(w - Int3.Y)) {
-								md.AddFace(w, 5, b.color);
+								md.AddFace(w, 5, color, texCoord);
 							}
 							if(!world.IsSolid(w + Int3.Z)) {
-								md.AddFace(w, 2, b.color);
+								md.AddFace(w, 2, color, texCoord);
 							}
 							if(!world.IsSolid(w - Int3.Z)) {
-								md.AddFace(w, 3, b.color);
+								md.AddFace(w, 3, color, texCoord);
 							}
 						}
 					}

@@ -13,15 +13,15 @@ public class WorldGenerator : MonoBehaviour
 	
 	Perlin perlin;
 
-	VoxelDare.Voxel vAir, vWater, vLand, vBedRock;
+	VoxelDare.Voxel vAir, vWater, vStone, vBedRock;
 		
 	public WorldGenerator()
 	{
 		perlin = new Perlin();
 		vAir = VoxelDare.Voxel.Empty;
-		vWater = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Soft, new Color(0.35f,0.50f,0.75f));
-		vLand = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Normal, new Color(0.92f,0.92f,0.92f));
-		vBedRock = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Ultra, new Color(0.21f,0.22f,0.22f));
+		vStone = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Normal, Color.white/*new Color(0.92f,0.92f,0.92f)*/, 1);
+		vBedRock = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Ultra, Color.white/*new Color(0.21f,0.22f,0.22f)*/, 3);
+		vWater = new VoxelDare.Voxel(VoxelDare.Voxel.Solidness.Soft, Color.white/*new Color(0.35f,0.50f,0.75f)*/, 2);
 	}
 
 	VoxelDare.Voxel FMinecraft(int x, int y, int z)
@@ -37,7 +37,7 @@ public class WorldGenerator : MonoBehaviour
 			}
 		}
 		else {
-			return vLand;
+			return vStone;
 		}
 	}
 	

@@ -11,6 +11,8 @@ namespace VoxelDare
 	{
 		public GameObject pfVoxelChunk;
 
+		public Material pfVoxelMaterial;
+
 		VoxelDare.World voxels;
 		public VoxelDare.World Voxels
 		{
@@ -36,6 +38,7 @@ namespace VoxelDare
 			// create gameobjects
 			foreach(var p in meshes) {
 				GameObject go = (GameObject)Instantiate(pfVoxelChunk);
+				go.GetComponent<Renderer>().material = pfVoxelMaterial;
 				SetMesh(go, p.Value);
 				go.transform.parent = this.transform;
 				go.transform.localPosition = new Vector3(0,0,0);
