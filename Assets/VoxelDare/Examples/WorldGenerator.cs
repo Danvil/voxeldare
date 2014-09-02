@@ -8,7 +8,7 @@ public class WorldGenerator : MonoBehaviour
 	public int worldSize = 32;
 	public int worldHeight = 6;
 
-	public enum WorldType { MINI_MINECRAFT, DISCWORLD };
+	public enum WorldType { MINI_MINECRAFT, DISCWORLD, ROLLINGHILLS };
 	public WorldType worldType;
 
 	Perlin perlin;
@@ -37,7 +37,7 @@ public class WorldGenerator : MonoBehaviour
 		return w;
 	}
 
-	const int WATER_HEIGHT = 0; // 4
+	const int WATER_HEIGHT = 4;
 	const float XY_SCALE = 2.0f;
 
 	VoxelDare.Voxel FMiniMinecraft(int x, int y, int z)
@@ -56,10 +56,10 @@ public class WorldGenerator : MonoBehaviour
 		}
 	}
 
-	public VoxelDare.World CreateMiniMinecraft(int size, int height)
+	public VoxelDare.World CreateMiniMinecraft()
 	{
 		return Create(
-			new VoxelDare.Int3(0,0,0), new VoxelDare.Int3(size,size,height),
+			new VoxelDare.Int3(0,0,0), new VoxelDare.Int3(16,16,8),
 			Vector3.one, FMiniMinecraft);
 	}
 
@@ -72,8 +72,10 @@ public class WorldGenerator : MonoBehaviour
 		return FMiniMinecraft(x,y,z);
 	}
 
-	public VoxelDare.World CreateDiscworld(int radius, int height)
+	public VoxelDare.World CreateDiscworld()
 	{
+		const int radius = 16;
+		const int height = 8;
 		Vector3 scale = Vector3.one;// new Vector3(4,4,4);
 		// pass 1: solid
 		VoxelDare.World vw = Create(
@@ -87,12 +89,39 @@ public class WorldGenerator : MonoBehaviour
 		return vw;
 	}
 
+	VoxelDare.Voxel FRollingHills(int x, int y, int z)
+	{
+		const float XY_SCALE = 1.3f;
+		float q = Mathf.Max(0, 5.0f*(1.0f+perlin.Compute(XY_SCALE*x,XY_SCALE*y,0)));
+		if(z > q) {
+			if(z < WATER_HEIGHT) {
+				return vWater;
+			}
+			else {
+				return vAir;
+			}
+		}
+		else {
+			return vLand;
+		}
+	}
+
+	public VoxelDare.World CreateRollingHills(int size, int height)
+	{
+		int radius = size/2;
+		return Create(
+			new VoxelDare.Int3(-radius,-radius,0), new VoxelDare.Int3(radius,radius,height),
+			Vector3.one,
+			(x,y,z) => FRollingHills(x,y,z));
+	}
+
 	void Start()
 	{
 		VoxelDare.World voxels = null;
 		switch(worldType) {
-			case WorldType.MINI_MINECRAFT: voxels = CreateMiniMinecraft(worldSize, worldHeight); break;
-			case WorldType.DISCWORLD: voxels = CreateDiscworld(worldSize/2, worldHeight); break;
+			case WorldType.MINI_MINECRAFT: voxels = CreateMiniMinecraft(); break;
+			case WorldType.DISCWORLD: voxels = CreateDiscworld(); break;
+			case WorldType.ROLLINGHILLS: voxels = CreateRollingHills(worldSize, worldHeight); break;
 		};
 		GetComponent<VoxelDare.VoxelRenderer>().Voxels = voxels;
 	}
