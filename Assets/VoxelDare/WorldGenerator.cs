@@ -5,8 +5,11 @@ using System;
 
 public class WorldGenerator : MonoBehaviour
 {
-	public int worldRadius = 16;
+	public int worldSize = 32;
 	public int worldHeight = 6;
+
+	public enum WorldType { MINI_MINECRAFT, DISCWORLD };
+	public WorldType worldType;
 
 	Perlin perlin;
 
@@ -54,10 +57,10 @@ public class WorldGenerator : MonoBehaviour
 		}
 	}
 
-	public VoxelEngine.World CreateMiniMinecraft()
+	public VoxelEngine.World CreateMiniMinecraft(int size, int height)
 	{
 		return Create(
-			new Int3(0,0,0), new Int3(32,32,8),
+			new Int3(0,0,0), new Int3(size,size,height),
 			Vector3.one, FMiniMinecraft);
 	}
 
@@ -87,8 +90,11 @@ public class WorldGenerator : MonoBehaviour
 
 	void Start()
 	{
-		// first pass voxels
-		VoxelEngine.World voxels = CreateDiscworld(worldRadius, worldHeight);
+		VoxelEngine.World voxels = null;
+		switch(worldType) {
+			case WorldType.MINI_MINECRAFT: voxels = CreateMiniMinecraft(worldSize, worldHeight); break;
+			case WorldType.DISCWORLD: voxels = CreateDiscworld(worldSize/2, worldHeight); break;
+		};
 		GetComponent<VoxelRenderer>().SetWorld(voxels);
 	}
 
