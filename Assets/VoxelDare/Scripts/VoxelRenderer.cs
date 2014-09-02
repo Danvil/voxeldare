@@ -36,17 +36,22 @@ namespace VoxelDare
 			// create gameobjects
 			foreach(var p in meshes) {
 				GameObject go = (GameObject)Instantiate(pfVoxelChunk);
-				go.SetMesh(p.Value);
+				SetMesh(go, p.Value);
 				go.transform.parent = this.transform;
 				go.transform.localPosition = new Vector3(0,0,0);
 				chunks[p.Key] = go;
 			}
 		}
 
-		void Recreate()
+		static void SetMesh(GameObject go, Mesh mesh)
 		{
-			foreach(var p in voxels.RecreateDirty()) {
-				chunks[p.Key].SetMesh(p.Value);
+			var meshFilter = go.GetComponent<MeshFilter>();
+			if(meshFilter) {
+				meshFilter.mesh = mesh;
+			}
+			var meshCollider = go.GetComponent<MeshCollider>();
+			if(meshCollider) {
+				meshCollider.sharedMesh = mesh;
 			}
 		}
 
@@ -56,7 +61,9 @@ namespace VoxelDare
 
 		void Update()
 		{
-			Recreate();
+			foreach(var p in voxels.RecreateDirty()) {
+				SetMesh(chunks[p.Key], p.Value);
+			}
 		}
 	}
 

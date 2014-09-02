@@ -21,40 +21,27 @@ namespace VoxelDare
 			indices.Clear();
 		}
 
+		public static Vector3 CwiseMult(Vector3 a, Vector3 b)
+		{
+			return new Vector3(a.x*b.x, a.y*b.y, a.z*b.z);
+		}
+
 		public Mesh CreateMesh(Vector3 scale)
 		{
 			Mesh mesh = new Mesh();
 			for(int i=0; i<vertices.Count; i++) {
-				vertices[i] = vertices[i].CoeffMult(scale);
+				vertices[i] = CwiseMult(vertices[i], scale);
 			}
 			mesh.vertices = vertices.ToArray();
 			mesh.normals = normals.ToArray();
 			mesh.uv = uv.ToArray();
 			mesh.colors = colors.ToArray();
 			mesh.triangles = indices.ToArray();
-			//mesh.RecalculateNormals();
 			return mesh;
 		}
 
 		public Mesh CreateMesh()
-		{
-			return CreateMesh(Vector3.one);
-		}
+		{ return CreateMesh(Vector3.one); }
 
-	}
-
-	public static class MeshTools
-	{
-		public static void SetMesh(this GameObject go, Mesh mesh)
-		{
-			var meshFilter = go.GetComponent<MeshFilter>();
-			if(meshFilter) {
-				meshFilter.mesh = mesh;
-			}
-			var meshCollider = go.GetComponent<MeshCollider>();
-			if(meshCollider) {
-				meshCollider.sharedMesh = mesh;
-			}
-		}
 	}
 }
