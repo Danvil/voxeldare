@@ -92,13 +92,12 @@ namespace VoxelDare
 		{
 			MeshData md = new MeshData();
 			int i = 0;
-			Int3 l = new Int3(0,0,0);
-			for(l.z=0; l.z<S; l.z++) {
-				for(l.y=0; l.y<S; l.y++) {
-					for(l.x=0; l.x<S; l.x++,i++) {
+			for(int z=0; z<S; z++) {
+				for(int y=0; y<S; y++) {
+					for(int x=0; x<S; x++,i++) {
 						Voxel b = voxels[i];
 						if(b.IsSolid) {
-							Int3 w = pos + l;
+							Int3 w = pos + new Int3(x,y,z);
 							if(!(  world.IsSolid(w + Int3.X)
 								&& world.IsSolid(w - Int3.X)
 								&& world.IsSolid(w + Int3.Y)
@@ -155,9 +154,12 @@ namespace VoxelDare
 
 		void Split(Int3 w, out Int3 c, out Int3 l)
 		{
-			Split(w.x, out c.x, out l.x);
-			Split(w.y, out c.y, out l.y);
-			Split(w.z, out c.z, out l.z);
+			int cx, cy, cz, lx, ly, lz;
+			Split(w.x, out cx, out lx);
+			Split(w.y, out cy, out ly);
+			Split(w.z, out cz, out lz);
+			c = new Int3(cx,cy,cz);
+			l = new Int3(lx,ly,lz);
 		}
 
 		public int Combine(int c, int l)
@@ -190,8 +192,7 @@ namespace VoxelDare
 		{			
 			min = min.Min(p);
 			max = max.Max(p);
-			Int3 c = new Int3();
-			Int3 l = new Int3();
+			Int3 c, l;
 			Split(p, out c, out l);
 			if(!chunks.ContainsKey(c)) {
 				chunks[c] = new Chunk(this, c);
@@ -221,8 +222,7 @@ namespace VoxelDare
 
 		public Voxel Get(Int3 p)
 		{
-			Int3 c = new Int3();
-			Int3 l = new Int3();
+			Int3 c, l;
 			Split(p, out c, out l);
 			if(!chunks.ContainsKey(c)) {
 				return Voxel.Empty;
@@ -234,8 +234,7 @@ namespace VoxelDare
 
 		public bool IsSolid(Int3 p)
 		{
-			Int3 c = new Int3();
-			Int3 l = new Int3();
+			Int3 c, l;
 			Split(p, out c, out l);
 			if(!chunks.ContainsKey(c)) {
 				return false;
@@ -276,17 +275,16 @@ namespace VoxelDare
 		{
 			Dictionary<Int2,Int3> bottom = new Dictionary<Int2,Int3>();
 			foreach(Int3 p in GetSolidVoxels()) {
-				Int2 key = new Int2(p.x,p.y);
+				Int2 key = p.xy;
 				Int3 current;
 				if(bottom.TryGetValue(key, out current)) {
 					if(current.z > p.z) {
-						current.z = p.z;
+						bottom[key] = p;
 					}
 				}
 				else {
-					current = p;
+					bottom[key] = p;
 				}
-				bottom[key] = current;
 			}
 			return bottom.Values.AsEnumerable();
 		}
@@ -295,25 +293,24 @@ namespace VoxelDare
 		{
 			Dictionary<Int2,Int3> topVoxels = new Dictionary<Int2,Int3>();
 			foreach(Int3 p in GetSolidVoxels()) {
-				Int2 key = new Int2(p.x,p.y);
+				Int2 key = p.xy;
 				Int3 current;
 				if(topVoxels.TryGetValue(key, out current)) {
 					if(current.z < p.z) {
-						current.z = p.z;
+						topVoxels[key] = p;
 					}
 				}
 				else {
-					current = p;
+					topVoxels[key] = p;
 				}
-				topVoxels[key] = current;
 			}
 			return topVoxels.Values.AsEnumerable();
 		}
 
 		public bool TryGetTopVoxel(Int2 p2, out Int3 top)
 		{
-			Int3 p = new Int3(p2.x,p2.y,0);
-			for(p.z=max.z; p.z>=min.z; p.z--) {
+			for(int z=max.z; z>=min.z; z--) {
+				Int3 p = new Int3(p2.x, p2.y, z);
 				if(IsSolid(p)) {
 					top = p;
 					return true;

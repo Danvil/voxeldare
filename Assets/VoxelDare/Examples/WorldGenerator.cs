@@ -27,11 +27,10 @@ public class WorldGenerator : MonoBehaviour
 	public VoxelDare.World Create(VoxelDare.Int3 min, VoxelDare.Int3 max, Vector3 scale, Func<int,int,int,VoxelDare.Voxel> f)
 	{
 		VoxelDare.World w = new VoxelDare.World(scale);
-		VoxelDare.Int3 p = VoxelDare.Int3.Zero;
-		for(p.z=min.z; p.z<max.z; p.z++) {
-			for(p.y=min.y; p.y<max.y; p.y++) {
-				for(p.x=min.x; p.x<max.x; p.x++) {
-					w.Set(p, f(p.x,p.y,p.z));
+		for(int z=min.z; z<max.z; z++) {
+			for(int y=min.y; y<max.y; y++) {
+				for(int x=min.x; x<max.x; x++) {
+					w.Set(new VoxelDare.Int3(x,y,z), f(x,y,z));
 				}
 			}
 		}

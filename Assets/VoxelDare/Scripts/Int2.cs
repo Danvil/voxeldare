@@ -5,7 +5,7 @@ namespace VoxelDare
 	[System.Serializable]
 	public struct Int2
 	{
-		public int x, y;
+		readonly public int x, y;
 
 		public Int2(int x, int y)
 		{
@@ -13,21 +13,30 @@ namespace VoxelDare
 			this.y = y;
 		}
 
-		public Int2(Vector3 v)
-		{
-			this.x = (int)v.x;
-			this.y = (int)v.z;
-		}
-
-		public Vector3 ToVector3()
-		{ return new Vector3(x,0,y); }
-
-		public override string ToString ()
-		{ return string.Format ("[Int2 ({0},{1})]", x, y); }
-
 		public static Int2 Zero = new Int2(0,0);
 		public static Int2 X = new Int2(1,0);
 		public static Int2 Y = new Int2(0,1);
+
+		public Int2 Min(Int2 v)
+		{ return new Int2(Mathf.Min(x,v.x), Mathf.Min(y,v.y)); }
+
+		public Int2 Max(Int2 v)
+		{ return new Int2(Mathf.Max(x,v.x), Mathf.Max(y,v.y)); }
+
+		public override string ToString()
+		{ return string.Format("[Int2 ({0},{1})]", x, y); }
+
+		public static bool operator==(Int2 a, Int2 b)
+		{ return a.x == b.x && a.y == b.y; }
+		
+		public static bool operator!=(Int2 a, Int2 b)
+		{ return a.x != b.x && a.y != b.y; }
+		
+		public override bool Equals(object obj)
+		{ return obj != null && obj is Int2 && this == (Int2)obj; }
+
+		public override int GetHashCode()
+		{ return x ^ y; }
 
 		public static Int2 operator-(Int2 a) 
 		{ return new Int2(-a.x, -a.y); }
