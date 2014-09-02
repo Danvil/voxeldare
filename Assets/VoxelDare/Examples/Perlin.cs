@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 /// <summary>
 /// Improved perlin noise after Ken Perlin's reference implementation.
@@ -7,6 +8,8 @@
 /// </summary>
 public class Perlin
 {
+	static System.Random random = new System.Random();
+
 	private int[] permutation;
 	private int[] p;
 	
@@ -34,7 +37,6 @@ public class Perlin
 		}
 	}
 	
-	
 	public Perlin()
 	{
 		Initialize();
@@ -47,17 +49,27 @@ public class Perlin
 	private void Initialize()
 	{
 		// random permutation
-		permutation = new int[256];
-		for(int i=0; i<permutation.Length; i++) {
-			permutation[i] = i;
-		}
-		permutation.ShuffleInplace();
+		permutation = Enumerable.Range(0,256).ToArray();
+		ShuffleInplace(permutation);
 		
 		// double it
 		p = new int[permutation.Length*2];
 		for(int i=0; i<permutation.Length; i++) {
 			p[i] = permutation[i];
 			p[permutation.Length + i] = permutation[i];
+		}
+	}
+	
+	static void ShuffleInplace<T>(T[] array)
+	{
+		int n = array.Length;
+		while (n > 1)
+		{
+			n--;
+			int i = random.Next(n + 1);
+			T temp = array[i];
+			array[i] = array[n];
+			array[n] = temp;
 		}
 	}
 	
