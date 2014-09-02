@@ -44,6 +44,8 @@ namespace VoxelDare
 				go.transform.localPosition = new Vector3(0,0,0);
 				chunks[p.Key] = go;
 			}
+			// combine
+			StaticBatchingUtility.Combine(chunks.Values.ToArray(), this.gameObject);
 		}
 
 		static void SetMesh(GameObject go, Mesh mesh)
