@@ -6,7 +6,8 @@ public class Player : MonoBehaviour
 
 	public bool flying = false;
 
-	public float speed = 1.0f;
+	public float walkSpeed = 5.0f;
+	public float flySpeed = 15.0f;
 
 	public float sensitivity = 15.0f;
 	 
@@ -47,12 +48,12 @@ public class Player : MonoBehaviour
 
 		float dz = Input.GetAxis("Vertical");
 		float dx = Input.GetAxis("Horizontal");
-		Vector3 delta = Time.deltaTime*speed*Limit(new Vector3(dx,0,dz), 1.0f);
+		Vector3 delta = Time.deltaTime*Limit(new Vector3(dx,0,dz), 1.0f);
 		if(flying) {
-			delta = this.transform.rotation * delta;
+			delta = this.transform.rotation * (flySpeed * delta);
 		}
 		else {
-			delta = Quaternion.AngleAxis(this.transform.rotation.eulerAngles.y, Vector3.up) * delta;
+			delta = Quaternion.AngleAxis(this.transform.rotation.eulerAngles.y, Vector3.up) * (walkSpeed * delta);
 		}
 		Vector3 posnew = this.transform.position + delta;
 		bool hasTopVoxel = voxelRenderer.Voxels.HasTopVoxel(posnew);
