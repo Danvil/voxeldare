@@ -78,14 +78,23 @@ namespace VoxelDare
 						Voxel b = voxels[i];
 						if(b.IsSolid) {
 							Int3 w = pos + new Int3(x,y,z);
-							if(!(  world.IsSolid(w + Int3.X)
-								&& world.IsSolid(w - Int3.X)
-								&& world.IsSolid(w + Int3.Y)
-								&& world.IsSolid(w - Int3.Y)
-								&& world.IsSolid(w + Int3.Z)
-								&& world.IsSolid(w - Int3.Z)
-							)) {
-								md.AddCube(w, b.color);
+							if(!world.IsSolid(w + Int3.X)) {
+								md.AddFace(w, 0, b.color);
+							}
+							if(!world.IsSolid(w - Int3.X)) {
+								md.AddFace(w, 1, b.color);
+							}
+							if(!world.IsSolid(w + Int3.Y)) {
+								md.AddFace(w, 4, b.color);
+							}
+							if(!world.IsSolid(w - Int3.Y)) {
+								md.AddFace(w, 5, b.color);
+							}
+							if(!world.IsSolid(w + Int3.Z)) {
+								md.AddFace(w, 2, b.color);
+							}
+							if(!world.IsSolid(w - Int3.Z)) {
+								md.AddFace(w, 3, b.color);
 							}
 						}
 					}
