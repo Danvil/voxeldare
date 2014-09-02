@@ -2,7 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "/C/proggen/git/voxeldare"
+			"path": "/C/proggen/git/voxeldare",
+			"file_exclude_patterns": ["*.meta", "*.mat", "*.prefab", "*.unity", "*.blend*"]
 		}
 	]
 }
