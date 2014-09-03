@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace VoxelDare
 {
+	[System.Serializable]
 	public class World
 	{
 		Dictionary<Int3,Chunk> chunks = new Dictionary<Int3,Chunk>();
