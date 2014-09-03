@@ -30,7 +30,10 @@ namespace VoxelDare
 		{
 			// clear old
 			foreach(var p in chunks) {
-				Destroy(p.Value);
+				if(Application.isPlaying)
+					Destroy(p.Value);
+				if(Application.isEditor)
+					DestroyImmediate(p.Value);
 			}
 			chunks.Clear();
 			// get all meshes
