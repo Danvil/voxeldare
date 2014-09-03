@@ -63,10 +63,18 @@ public class WorldGenerator : MonoBehaviour
 			(x,y,z) => FMinecraft(x,y,z));
 	}
 
+	public void ClearWorld()
+	{
+		GetComponent<VoxelDare.VoxelRenderer>().Voxels = new VoxelDare.World(Vector3.one);
+	}
+
+	public void GenerateWorld()
+	{
+		GetComponent<VoxelDare.VoxelRenderer>().Voxels = CreateRollingHills(worldSize, worldHeight);
+	}
+
 	void Start()
 	{
-		VoxelDare.World voxels = CreateRollingHills(worldSize, worldHeight);
-		GetComponent<VoxelDare.VoxelRenderer>().Voxels = voxels;
 	}
 
 	void Update()
