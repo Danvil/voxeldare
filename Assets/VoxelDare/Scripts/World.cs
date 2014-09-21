@@ -2,21 +2,30 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace VoxelDare
 {
-	[System.Serializable]
+	[Serializable]
 	public class World
+		: ISerializationCallbackReceiver
 	{
-		Dictionary<Int3,Chunk> chunks = new Dictionary<Int3,Chunk>();
+		Dictionary<Int3,Chunk> chunks;
 
+		[SerializeField]
+		List<Chunk> _tmp_chunks;
+
+		[SerializeField]
 		Vector3 scale = Vector3.one;
 
+		[SerializeField]
 		Int3 min = Int3.Zero;
+		[SerializeField]
 		Int3 max = Int3.Zero;
 
 		public World(Vector3 scale)
 		{
+			chunks = new Dictionary<Int3,Chunk>();
 			this.scale = scale;
 		}
 
@@ -150,6 +159,26 @@ namespace VoxelDare
 		{
 			return chunks.SelectMany(x => x.Value.GetSolidVoxels().Select(l => Combine(x.Key, l)));
 		}
+
+
+		#region ISerializationCallbackReceiver implementation
+
+		public void OnBeforeSerialize()
+		{
+			_tmp_chunks = chunks.Values.ToList();
+		}
+
+		public void OnAfterDeserialize()
+		{
+			chunks = new Dictionary<Int3, Chunk>();
+			foreach(Chunk c in _tmp_chunks) {
+				chunks[c.Position] = c;
+				c.World = this;
+			}
+		}
+
+		#endregion
+
 
 		public IEnumerable<Int3> GetBottomVoxels()
 		{

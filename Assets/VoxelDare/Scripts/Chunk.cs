@@ -5,17 +5,30 @@ using System.Linq;
 
 namespace VoxelDare
 {
+	[System.Serializable]
 	public class Chunk
+		: ISerializationCallbackReceiver
 	{
 		public const int S = 8;
 		
 		World world;
 
-		Int3 pos;
+		public World World {
+			get { return world; }
+			set { world = value; }
+		}
 
+		[SerializeField]
+		Int3 pos;
+	
+		public Int3 Position {
+			get { return pos; }
+		}
+
+		[SerializeField]
 		List<Voxel> voxels;
 
-		HashSet<Int3> solidVoxels = new HashSet<Int3>();
+		HashSet<Int3> solidVoxels;
 
 		public bool Dirty { get; set; }
 
@@ -24,7 +37,7 @@ namespace VoxelDare
 			this.world = world;
 			this.pos = S*pos;
 			this.voxels = Enumerable.Repeat(Voxel.Empty, S*S*S).ToList();
-			solidVoxels.Clear();
+			solidVoxels = new HashSet<Int3>();
 		}
 		
 		int ToIndex(Int3 p)
@@ -115,5 +128,36 @@ namespace VoxelDare
 		{
 			return solidVoxels.AsEnumerable();
 		}
+
+		private void RefreshSolidVoxels()
+		{
+			solidVoxels = new HashSet<Int3>();
+			int i = 0;
+			for(int z=0; z<S; z++) {
+				for(int y=0; y<S; y++) {
+					for(int x=0; x<S; x++,i++) {
+						Voxel b = voxels[i];
+						if(b.IsSolid) {
+							solidVoxels.Add(new Int3(x,y,z));
+						}
+					}
+				}
+			}
+		}
+
+		#region ISerializationCallbackReceiver implementation
+		
+		public void OnBeforeSerialize()
+		{
+			
+		}
+		
+		public void OnAfterDeserialize()
+		{
+			RefreshSolidVoxels();
+			Dirty = true;
+		}
+		
+		#endregion
 	}
 }

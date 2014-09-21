@@ -5,7 +5,7 @@ namespace VoxelDare
 	[System.Serializable]
 	public struct Int2
 	{
-		readonly public int x, y;
+		public int x, y;
 
 		public Int2(int x, int y)
 		{

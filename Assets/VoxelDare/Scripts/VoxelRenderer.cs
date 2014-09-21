@@ -6,36 +6,71 @@ using System.Linq;
 namespace VoxelDare
 {
 
-	[AddComponentMenu("VoxelDare/VoxelRenderer")]
-	public class VoxelRenderer : MonoBehaviour
+	[AddComponentMenu("VoxelDare/VoxelRenderer"), ExecuteInEditMode]
+	public class VoxelRenderer : MonoBehaviour, ISerializationCallbackReceiver
 	{
 		public GameObject pfVoxelChunk;
 
 		public Material pfVoxelMaterial;
 
+		bool needsChunkCreate;
+
+		[SerializeField]
 		VoxelDare.World voxels;
 		public VoxelDare.World Voxels
 		{
 			get { return voxels; }
-			set
-			{
+			set {
 				this.voxels = value;
-				Create();
+				needsChunkCreate = true;
+				this.transform.localPosition = Vector3.zero;
 			}
 		}
 
-		Dictionary<Int3,GameObject> chunks = new Dictionary<VoxelDare.Int3,GameObject>();
+		Dictionary<Int3,GameObject> chunks;
 
-		void Create()
+		[SerializeField]
+		List<Int3> tmp_chunks_keys;
+		[SerializeField]
+		List<GameObject> tmp_chunks_values;
+
+		VoxelRenderer()
+		{
+		}
+
+		#region ISerializationCallbackReceiver implementation
+
+		public void OnBeforeSerialize()
+		{
+			tmp_chunks_keys = chunks.Keys.ToList();
+			tmp_chunks_values = chunks.Values.ToList();
+			Debug.Log("OnBeforeSerialize"); 
+		}
+
+		public void OnAfterDeserialize()
+		{
+			chunks = new Dictionary<VoxelDare.Int3,GameObject>();
+			for(int i=0; i<tmp_chunks_keys.Count; i++) {
+				chunks[tmp_chunks_keys[i]] = tmp_chunks_values[i];
+			}
+			needsChunkCreate = false;
+			Debug.Log("OnAfterDeserialize");
+		}
+
+		#endregion
+
+		void CreateChunks()
 		{
 			// clear old
-			foreach(var p in chunks) {
-				if(Application.isPlaying)
-					Destroy(p.Value);
-				if(Application.isEditor)
-					DestroyImmediate(p.Value);
+			if(chunks != null) {
+				foreach(var p in chunks) {
+					if(Application.isPlaying)
+						Destroy(p.Value);
+					if(Application.isEditor)
+						DestroyImmediate(p.Value);
+				}
 			}
-			chunks.Clear();
+			chunks = new Dictionary<VoxelDare.Int3,GameObject>();
 			// get all meshes
 			Dictionary<Int3,Mesh> meshes = voxels.CreateAll();
 			// create gameobjects
@@ -49,6 +84,13 @@ namespace VoxelDare
 			}
 			// combine
 			StaticBatchingUtility.Combine(chunks.Values.ToArray(), this.gameObject);
+		}
+
+		void RefreshChunks()
+		{
+			foreach(var p in voxels.RecreateDirty()) {
+				SetMesh(chunks[p.Key], p.Value);
+			}
 		}
 
 		static void SetMesh(GameObject go, Mesh mesh)
@@ -65,12 +107,16 @@ namespace VoxelDare
 
 		void Start()
 		{
+			needsChunkCreate = true;
 		}			
 
 		void Update()
 		{
-			foreach(var p in voxels.RecreateDirty()) {
-				SetMesh(chunks[p.Key], p.Value);
+			if(needsChunkCreate) {
+				CreateChunks();
+			}
+			else {
+				RefreshChunks();
 			}
 		}
 	}

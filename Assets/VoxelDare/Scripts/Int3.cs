@@ -16,7 +16,7 @@ namespace VoxelDare
 	[System.Serializable]
 	public struct Int3
 	{
-		readonly public int x, y, z;
+		public int x, y, z;
 
 		public Int3(int x, int y, int z)
 		{

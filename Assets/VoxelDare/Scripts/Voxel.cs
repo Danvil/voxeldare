@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace VoxelDare
 {
+	[Serializable]
 	public class Voxel
-		: ISerialize
 	{
 		public const int TEX_ATLAS_SIZE = 4;
 
@@ -28,28 +29,5 @@ namespace VoxelDare
 			this.color = color;
 			this.texId = texId;
 		}
-
-
-		#region IVoxelSerialize implementation
-
-		public void Read(List<byte> data)
-		{
-			data.Add((byte)solid); // TODO
-			data.Add(color.r);
-			data.Add(color.g);
-			data.Add(color.b);
-			data.Add(color.a);
-			data.Add((byte)texId); // TODO
-		}
-
-		public void Write(List<byte> data)
-		{
-			solid = (Solidness)data[0];
-			color = new Color32(data[1], data[2], data[3], data[4]);
-			texId = data[5];
-		}
-
-		#endregion
-
 	}
 }
